@@ -30,7 +30,6 @@ class MRI_dataset(Dataset):
         self.imgs_paths = sorted(list(Path(self.img_dir).iterdir()))
         self.mri_array = self.read_fMRI_data()
         self.image_list = self.read_image_list()
-        #self.csv_file_path = csv_file_path
         self.text_dict = self.read_text_csv_file()
 
     def read_image_list(self):
@@ -60,7 +59,7 @@ class MRI_dataset(Dataset):
 
         img_path = self.imgs_paths[idx]
         img_name = str(img_path).split("/")[-1].replace('.png', '')
-        #print('img_path', img_path)
+
         img = Image.open(img_path).convert('RGB')
 
         img = self.vis_transform["eval"](img).to(device)
