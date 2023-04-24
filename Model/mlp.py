@@ -1,18 +1,28 @@
 import torch
+import torch.nn as nn
+torch.manual_seed(3407)
 
-class MLP_Basic(torch.nn.Module):
-    def __init__(self, feature_size, mri_dimension=19004):
-        super(MLP_Basic, self).__init__()
-        self.feature_size = feature_size
-        self.mri_dimension = mri_dimension
+class MLP_basic(nn.Module):
+    def __init__(self, input_size, output_size, hidden_size, num_layers):
+        super(FlexibleMLP, self).__init__()
+        self.input_size = input_size
+        self.output_size = output_size
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        
+        self.layers = []
+        self.layers.append(nn.Linear(input_size * 32, hidden_size))
 
-        self.hid1 = torch.nn.Linear(self.feature_size, self.mri_dimension // 3)  
-        self.hid2 = torch.nn.Linear(self.mri_dimension // 3, self.mri_dimension // 2)
-        self.oupt = torch.nn.Linear(self.mri_dimension // 2, self.mri_dimension)
-    
-    def forward(self, src):
-        src = src.view(-1, src.shape[1] * src.shape[2])
-        z = torch.relu(self.hid1(src))
-        z = torch.relu(self.hid2(z))
-        z = self.oupt(z)
-        return z
+        for i in range(num_layers-1):
+            self.layers.append(nn.Linear(hidden_size, hidden_size))
+
+        self.layers.append(nn.Linear(hidden_size, output_size))
+        self.layers = nn.ModuleList(self.layers)
+        
+    def forward(self, x):
+        x = x.view(-1, src.shape[1] * src.shape[2])
+
+        for i in range(self.num_layers):
+            x = torch.relu(self.layers[i](x))
+
+        return x
