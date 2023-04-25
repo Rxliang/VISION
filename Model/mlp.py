@@ -16,7 +16,7 @@ class MLP_basic(nn.Module):
         for i in range(num_layers-1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
 
-        self.layers.append(nn.Linear(hidden_size, output_size))
+        self.output = nn.Linear(hidden_size, output_size)
         self.layers = nn.ModuleList(self.layers)
         
     def forward(self, x):
@@ -25,4 +25,6 @@ class MLP_basic(nn.Module):
         for i in range(self.num_layers):
             x = torch.relu(self.layers[i](x))
 
+        x = self.output(x)
+        
         return x
