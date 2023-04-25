@@ -4,7 +4,7 @@ torch.manual_seed(3407)
 
 class MLP_basic(nn.Module):
     def __init__(self, input_size, output_size, hidden_size, num_layers):
-        super(FlexibleMLP, self).__init__()
+        super(MLP_basic, self).__init__()
         self.input_size = input_size
         self.output_size = output_size
         self.hidden_size = hidden_size

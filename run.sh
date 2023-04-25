@@ -1,6 +1,9 @@
 #!/bin/bash
-#$ -l ram_free=40G,mem_free=40G,hostname=c*
+#$ -l gpu=1,ram_free=40G,mem_free=40G,hostname=c*
 #$ -e /home/xzhan233/MIND/logs/result.log
 #$ -o /home/xzhan233/MIND/logs/result.txt
+#$ -q g.q
 
-python3 /home/xzhan233/MIND/main.py --config /home/xzhan233/MIND/config.yaml
+yaml_location=/home/xzhan233/MIND/config.yaml
+
+python3 /home/xzhan233/MIND/main.py --config ${yaml_location}
