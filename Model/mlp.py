@@ -20,7 +20,7 @@ class MLP_basic(nn.Module):
         self.layers = nn.ModuleList(self.layers)
         
     def forward(self, x):
-        x = x.view(-1, src.shape[1] * src.shape[2])
+        x = x.view(-1, x.shape[1] * x.shape[2])
 
         for i in range(self.num_layers):
             x = torch.relu(self.layers[i](x))
