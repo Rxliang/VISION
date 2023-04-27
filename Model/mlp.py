@@ -17,11 +17,11 @@ class MLP_model:
     def init_MLP_Mixer(self):
 
         model = MLPMixer(
-            self.image_size,
-            self.channels,
-            self.patch_size,
-            self.dim,
-            self.depth,
-            self.num_classes
+            image_size = self.image_size,
+            channels = self.channels,
+            patch_size = self.patch_size,
+            dim = self.dim,
+            depth = self.depth,
+            num_classes = self.num_classes
         )
         return model

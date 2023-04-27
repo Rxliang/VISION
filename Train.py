@@ -157,12 +157,15 @@ class TrainManager:
 
                 correlation = self.eval_MLP_model(test_loader, multimodal_encoder, predictor)
                 mean_correlation = torch.mean(correlation)
-                if mean_correlation>top3[0][1]:
+
+                if mean_correlation > top3[0][1]:
                     top3[0] = (predictor.state_dict(), mean_correlation)
                     top3.sort(key=lambda x: x[1],reverse=True)
                 sys.stderr.write('the mean correlation test is {}'.format(mean_correlation))
+
             for i in range(3):
                 torch.save(top3[i][0],f"top{i+1}_model_corr{top3[i][1]}.pt")
+
         if model_type == 'transformer':
             for index in range(epoch):
                 loss = self.train_MLP_one_epoch(train_loader, multimodal_encoder, predictor, optimizer, criterion)

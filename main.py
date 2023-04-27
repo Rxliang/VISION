@@ -5,7 +5,6 @@ import argparse
 from Model.mlp import MLP_model
 from Train import TrainManager
 from lavis.models import load_model_and_preprocess
-from mlp_mixer_pytorch import MLPMixer
 from Data.dataset import MRI_dataset, train_test_split
 
 device = 'cuda'
@@ -48,7 +47,8 @@ def main():
     feature_size = train_dataset.mri_dim
     train_loader, eval_loader, test_loader = train_test_split(train_dataset, batch_size)
     
-    predictor = MLPMixer((32,24), channels, patch_size, dim, depth, feature_size)
+    MLP_model_class = MLP_model(channels, patch_size, dim, depth, feature_size)
+    predictor = MLP_model_class.init_MLP_Mixer()
 
 
     trainer = TrainManager(train_loader, train_loader, test_loader, test_loader, blip2_model, predictor)
