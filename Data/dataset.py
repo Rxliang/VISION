@@ -32,6 +32,8 @@ class MRI_dataset(Dataset):
         self.image_list = self.read_image_list()
         self.text_dict = self.read_text_csv_file()
 
+        self.mri_dim = self.mri_array.shape[-1]
+
     def read_image_list(self):
         img_list = os.listdir(self.img_dir)
         img_list.sort()

@@ -1,45 +1,37 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
+from torch import nn
 
-class CNNTransformer(nn.Module):
-    def __init__(self, feature_dim, output_dim, num_cnn_layers, num_transformer_layers,
-     num_heads, hidden_dim, dropout_prob):
-        super(CNNTransformer, self).__init__()
+class Transformer_predictor(nn.Module):
+    def __init__(self, layer_scale=[8, 8, 4], output_dim=19004, nhead=4, num_layers=8, feature_dim=768):
+        super(Transformer_predictor, self).__init__()
 
-        # Define CNN layers
-        self.cnn_layers = nn.ModuleList()
-        in_channels = feature_dim
-        for i in range(num_cnn_layers):
-            out_channels = 2 * in_channels if i == 0 else in_channels // 2
-            self.cnn_layers.append(nn.Conv1d(in_channels, out_channels, kernel_size=3, stride=1, padding=1))
-            self.cnn_layers.append(nn.ReLU())
-            self.cnn_layers.append(nn.BatchNorm1d(out_channels))
-            self.cnn_layers.append(nn.MaxPool1d(kernel_size=2, stride=2))
-            in_channels = out_channels
+        self.input_dim = 32 * feature_dim
 
-        # Define Transformer layers
-        self.transformer_layer = nn.TransformerEncoderLayer(d_model=in_channels, nhead=num_heads, dim_feedforward=hidden_dim, dropout=dropout_prob)
-        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_transformer_layers) 
+        self.input_net = nn.ModuleList()
+        temp_dim = self.input_dim
+        for num in layer_scale:
+            self.input_net.append(nn.Linear(temp_dim, temp_dim // num))
+            temp_dim =  temp_dim // num
 
-        # Define output layer
-        self.output_layer = nn.Linear(in_channels, output_dim)
 
-    def forward(self, x):
-        # Pass input through CNN layers
-        for layer in self.cnn_layers:
-            x = layer(x)
+        self.encoder_layer = nn.TransformerEncoderLayer(d_model=temp_dim, nhead=nhead, batch_first=True)
+        self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=num_layers)
 
-        # Reshape to fit Transformer input shape
-        x = x.permute(2, 0, 1)
+        self.output_net = nn.ModuleList() 
+        for index in range(len(self.input_net) - 1, -1, -1):
+            self.output_net.append(torch.nn.Linear(self.input_net[index].out_features, self.input_net[index].in_features))
+        
+        self.output_net[-1] = torch.nn.Linear(self.output_net[-1].in_features, output_dim)
 
-        # Pass input through Transformer layer
-        x = self.transformer(x)
+    def forward(self, src):
+        src = src.view(-1, src.shape[1] * src.shape[2])
 
-        # Reshape back to fit output shape
-        x = x.permute(1, 2, 0)
+        for net in self.input_net:
+            src = net(src)
+            
+        src = self.transformer_encoder(src)
 
-        # Pass through output layer
-        x = self.output_layer(x[:, :, -1])
+        for net in self.output_net:
+            src = net(src)
 
-        return x
+        return src

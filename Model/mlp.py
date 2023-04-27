@@ -1,30 +1,25 @@
 import torch
 import torch.nn as nn
+from mlp_mixer_pytorch import MLPMixer
 torch.manual_seed(3407)
 
-class MLP_basic(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size, num_layers):
-        super(MLP_basic, self).__init__()
-        self.input_size = input_size
-        self.output_size = output_size
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        
-        self.layers = []
-        self.layers.append(nn.Linear(input_size * 32, hidden_size))
+device = 'cuda'
 
-        for i in range(num_layers-1):
-            self.layers.append(nn.Linear(hidden_size, hidden_size))
+class MLP_model:
+    def __init__(self, channels, patch_size, dim, depth, num_classes):
+        self.channels = channels
+        self.patch_size = patch_size
+        self.dim = dim
+        self.depth = depth
+        self.num_classes = num_classes
 
-        self.output = nn.Linear(hidden_size, output_size)
-        self.layers = nn.ModuleList(self.layers)
-        
-    def forward(self, x):
-        x = x.view(-1, x.shape[1] * x.shape[2])
-
-        for i in range(self.num_layers):
-            x = torch.relu(self.layers[i](x))
-
-        x = self.output(x)
-        
-        return x
+    def init_MLP_Mixer(self,):
+        model = MLPMixer(
+            (32,24),
+            self.channels,
+            self.patch_size,
+            self.dim,
+            self.depth,
+            self.num_classes
+        )
+        return model

@@ -2,8 +2,8 @@ import os
 import yaml
 import torch
 import argparse
-from Model.mlp import MLP_basic
-from Trainer import TrainManager
+from Model.mlp import MLP_model
+from Train import TrainManager
 from lavis.models import load_model_and_preprocess
 from Data.dataset import MRI_dataset, train_test_split
 
@@ -32,22 +32,24 @@ def main():
 
 
 
-    input_size = config['MLP_model']['input_size']
-    output_size = config['MLP_model']['output_size']
-    hidden_size = config['MLP_model']['hidden_size']
-    num_layers = config['MLP_model']['num_layers']
+    channels = config['MLP_model']['channels']
+    patch_size = config['MLP_model']['patch_size']
+    dim = config['MLP_model']['dim']
+    depth = config['MLP_model']['depth']
 
     epoch = config['parameter']['epoch']
     lr = config['parameter']['lr']
 
     blip2_model, vis_processors, txt_processors = load_model_and_preprocess(name="blip2_feature_extractor", 
     model_type="pretrain", is_eval=True, device=device)
-    
-    predictor = MLP_basic(input_size, output_size, hidden_size, num_layers)
 
     train_dataset = MRI_dataset(subj, data_type, brain_type, vis_processors, txt_processors, data_dir, csv_file_path)
-
+    feature_size = train_dataset.mri_dim
     train_loader, eval_loader, test_loader = train_test_split(train_dataset, batch_size)
+    
+    MLP_model_class = MLP_model(channels, patch_size, dim, depth, feature_size)
+    predictor = MLP_model_class.init_MLP_Mixer()
+
 
     trainer = TrainManager(train_loader, train_loader, test_loader, test_loader, blip2_model, predictor)
     trainer.train(epoch, 'left', lr)

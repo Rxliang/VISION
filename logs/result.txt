@@ -1,3 +1,0 @@
-Number of GPUs: 4
-Free GPUs:  0 1 2 3
-Select device: 0
