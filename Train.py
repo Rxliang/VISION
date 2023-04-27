@@ -130,7 +130,7 @@ class TrainManager:
         return mri_correlation
 
 
-    def train(self, epoch, brain_type, model_type, lr, model_type ='MLP'):
+    def train(self, epoch, brain_type, lr, model_type='MLP'):
 
         if brain_type == 'left':
             train_loader = self.train_left_dataloader
@@ -150,6 +150,7 @@ class TrainManager:
         optimizer = optim.Adam(predictor.parameters(), lr, weight_decay=5e-4,)
 
         if model_type == 'MLP':
+            mean_corr = {}
             for index in range(epoch):
                 loss = self.train_MLP_one_epoch(train_loader, multimodal_encoder, predictor, optimizer, criterion)
                 sys.stderr.write('the total loss at epoch {} is {}'.format(index + 1, loss))

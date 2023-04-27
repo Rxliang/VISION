@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -l gpu=1,ram_free=40G,mem_free=40G,hostname=c*
+#$ -l gpu=1,ram_free=30G,mem_free=30G,hostname=c*
 #$ -e /home/xzhan233/MIND/logs/result.log
 #$ -o /home/xzhan233/MIND/logs/result.txt
 #$ -q g.q

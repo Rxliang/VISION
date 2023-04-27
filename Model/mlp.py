@@ -7,15 +7,17 @@ device = 'cuda'
 
 class MLP_model:
     def __init__(self, channels, patch_size, dim, depth, num_classes):
+        self.image_size = (32,24)
         self.channels = channels
         self.patch_size = patch_size
         self.dim = dim
         self.depth = depth
         self.num_classes = num_classes
 
-    def init_MLP_Mixer(self,):
+    def init_MLP_Mixer(self):
+
         model = MLPMixer(
-            (32,24),
+            self.image_size,
             self.channels,
             self.patch_size,
             self.dim,
