@@ -4,6 +4,6 @@
 #$ -o /home/xzhan233/MIND/logs/result.txt
 #$ -q g.q
 
-yaml_location=/home/xzhan233/MIND/config.yaml
+yaml_location=./config.yaml
 
-python3 /home/xzhan233/MIND/main.py --config ${yaml_location}
+python3 ./main.py --config ${yaml_location}

@@ -13,6 +13,6 @@ MLP_model:
   depth: 12
 
 parameter:
-  epoch: 100
+  epoch: 50
   lr: 0.001
   

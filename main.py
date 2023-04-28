@@ -41,6 +41,7 @@ def main():
     epoch = config['parameter']['epoch']
     lr = config['parameter']['lr']
 
+    sys.stderr.write('start loading model')
     blip2_model, vis_processors, txt_processors = load_model_and_preprocess(name="blip2_feature_extractor", 
     model_type="pretrain", is_eval=True, device=device)
 
@@ -55,7 +56,7 @@ def main():
 
     trainer = TrainManager(train_loader, train_loader, test_loader, test_loader, blip2_model, predictor, nc_class)
 
-    sys.stderr.write('start training')
+    print('start training')
     trainer.train(epoch, 'left', lr)
 
 if __name__=='__main__':
