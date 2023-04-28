@@ -86,3 +86,27 @@ def train_test_split(train_dataset, batch_size, shuffle=False):
     test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=shuffle)
 
     return train_loader, eval_loader, test_loader
+
+class noisy_celing_metric:
+    def __init__(self, data_dir, subj, brain_type):
+        self.subj = format(subj, '2')
+        self.data_dir = os.path.join(data_dir,'subject_nc')
+        self.noisy_celing_path = os.path.join(self.data_dir, 'subject'+ self.subj.strip() +'_' + brain_type + '_' + 'nc.npy')
+        self.nc_array = None
+    
+    def load_nc_file(self):
+        nc_array = np.load(self.noisy_celing_path)
+        return nc_array
+    
+    def calculate_metric(self, mri_correlation):
+        self.nc_array = self.load_nc_file()
+
+        mri_correlation = mri_correlation ** 2
+        mri_correlation = mri_correlation.to('cpu')
+
+        cor_array = mri_correlation / self.nc_array
+        mask =  ~torch.isinf(cor_array)
+        cor_array = cor_array[mask]
+
+        corr = torch.median(cor_array)
+        return corr * 100

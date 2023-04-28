@@ -1,11 +1,12 @@
 import os
+import sys
 import yaml
 import torch
 import argparse
 from Model.mlp import MLP_model
 from Train import TrainManager
 from lavis.models import load_model_and_preprocess
-from Data.dataset import MRI_dataset, train_test_split
+from Data.dataset import MRI_dataset, train_test_split, noisy_celing_metric
 
 device = 'cuda'
 torch.manual_seed(3407)
@@ -50,8 +51,11 @@ def main():
     MLP_model_class = MLP_model(channels, patch_size, dim, depth, feature_size)
     predictor = MLP_model_class.init_MLP_Mixer()
 
+    nc_class = noisy_celing_metric(data_dir, subj, brain_type)
 
-    trainer = TrainManager(train_loader, train_loader, test_loader, test_loader, blip2_model, predictor)
+    trainer = TrainManager(train_loader, train_loader, test_loader, test_loader, blip2_model, predictor, nc_class)
+
+    sys.stderr.write('start training')
     trainer.train(epoch, 'left', lr)
 
 if __name__=='__main__':

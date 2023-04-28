@@ -7,7 +7,7 @@ device = 'cuda'
 
 class TrainManager:
     def __init__(self, train_left_dataloader, train_right_dataloader, test_left_dataloader, 
-                 test_right_dataloader, LAVIS_model, predictor_model):
+                 test_right_dataloader, LAVIS_model, predictor_model, metric_class):
         
         self.train_left_dataloader = train_left_dataloader
         self.train_right_dataloader = train_right_dataloader
@@ -86,7 +86,8 @@ class TrainManager:
 
         mri_correlation = self.elementwise_corrcoef(torch.vstack(total_predict_result), torch.vstack(total_mri_result))
 
-        return mri_correlation
+        corr = metric_class.calculate_metric(mri_correlation)
+        return corr
 
     def train_transformer_one_epoch(self, dataloader, encoder, predictor, optimizer, criterion):
         total_loss = 0
@@ -127,7 +128,8 @@ class TrainManager:
           
         mri_correlation = self.elementwise_corrcoef(torch.vstack(total_predict_result), torch.vstack(total_mri_result))
                 
-        return mri_correlation
+        corr = metric_class.calculate_metric(mri_correlation)
+        return corr
 
 
     def train(self, epoch, brain_type, lr, model_type='MLP'):
@@ -156,12 +158,12 @@ class TrainManager:
                 sys.stderr.write('the total loss at epoch {} is {}'.format(index + 1, loss))
 
                 correlation = self.eval_MLP_model(test_loader, multimodal_encoder, predictor)
-                mean_correlation = torch.mean(correlation)
+                mean_correlation = correlation
 
                 if mean_correlation > top3[0][1]:
                     top3[0] = (predictor.state_dict(), mean_correlation)
                     top3.sort(key=lambda x: x[1],reverse=True)
-                sys.stderr.write('the mean correlation test is {}'.format(mean_correlation))
+                sys.stderr.write('the median correlation test is {}'.format(mean_correlation))
 
             for i in range(3):
                 torch.save(top3[i][0],f"top{i+1}_model_corr{top3[i][1]}.pt")
@@ -172,6 +174,6 @@ class TrainManager:
                 sys.stderr.write('the total loss at epoch {} is {}'.format(index + 1, loss))
 
                 correlation = self.eval_MLP_model(test_loader, multimodal_encoder, predictor)
-                mean_correlation = torch.mean(correlation)
-                sys.stderr.write('the mean correlation test is {}'.format(mean_correlation))
+                mean_correlation = correlation
+                sys.stderr.write('the median correlation test is {}'.format(mean_correlation))
 
