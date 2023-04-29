@@ -80,15 +80,13 @@ class TrainManager:
                 encoder_output = encoder_output.view(-1, 32, 32, 24)
                 
                 predict_output = predictor(encoder_output)
-                predict_output = predictor(encoder_output)
 
                 total_predict_result.append(predict_output)
                 total_mri_result.append(mri.to('cuda'))
 
         mri_correlation = self.elementwise_corrcoef(torch.vstack(total_predict_result), torch.vstack(total_mri_result))
 
-        corr = self.metric_class.calculate_metric(mri_correlation)
-        return corr
+        return mri_correlation
 
     def train_transformer_one_epoch(self, dataloader, encoder, predictor, optimizer, criterion):
         total_loss = 0
@@ -154,20 +152,27 @@ class TrainManager:
 
         if model_type == 'MLP':
             top3 = [(None,0)]*3
+            top3_correlation_matrix = [(None,0)]*3
+
             for index in range(epoch):
                 loss = self.train_MLP_one_epoch(train_loader, multimodal_encoder, predictor, optimizer, criterion)
                 print('the total loss at epoch {} is {}'.format(index + 1, loss))
 
                 correlation = self.eval_MLP_model(test_loader, multimodal_encoder, predictor)
-                mean_correlation = correlation
+                mean_correlation = self.metric_class.calculate_metric(correlation)
 
                 if mean_correlation > top3[0][1]:
                     top3[0] = (predictor.state_dict(), mean_correlation)
-                    top3.sort(key=lambda x: x[1],reverse=True)
+                    top3.sort(key=lambda x: x[1],reverse=False)
+
+                    top3_correlation_matrix[0] = (correlation.to('cpu'), mean_correlation)
+                    top3_correlation_matrix.sort(key=lambda x: x[1],reverse=False)
+
                 print('the median correlation test is {}'.format(mean_correlation))
 
             for i in range(3):
                 torch.save(top3[i][0],f"top{i+1}_model_corr{top3[i][1]}.pt")
+                torch.save(top3_correlation_matrix[i][0],f"top{i+1}_corr_matrix{top3[i][1]}.pt")
 
         if model_type == 'transformer':
             for index in range(epoch):
