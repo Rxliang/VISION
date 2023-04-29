@@ -1,4 +1,5 @@
 import sys
+import os
 import torch
 from torch import optim
 torch.manual_seed(3407)
@@ -131,7 +132,7 @@ class TrainManager:
         return corr
 
 
-    def train(self, epoch, brain_type, lr, model_type='MLP'):
+    def train(self, epoch, brain_type, lr, subj, save_path, model_type='MLP'):
 
         if brain_type == 'left':
             train_loader = self.train_left_dataloader
@@ -171,8 +172,8 @@ class TrainManager:
                 print('the median correlation test is {}'.format(mean_correlation))
 
             for i in range(3):
-                torch.save(top3[i][0],f"top{i+1}_model_corr{top3[i][1]}.pt")
-                torch.save(top3_correlation_matrix[i][0],f"top{i+1}_corr_matrix{top3[i][1]}.pt")
+                torch.save(top3[i][0], os.path.join(save_path, f"top{i+1}_model_subj{subj}_{brain_type}_corr{top3[i][1]}.pt"))
+                torch.save(top3_correlation_matrix[i][0], os.path.join(save_path, f"top{i+1}_corr_matrix_subj{subj}_{brain_type}_{top3[i][1]}.pt"))
 
         if model_type == 'transformer':
             for index in range(epoch):

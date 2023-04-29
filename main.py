@@ -30,7 +30,7 @@ def main():
     batch_size = config['Dataset']['batch_size']
     csv_file_path = config['Dataset']['csv_file_path']
     brain_type = config['Dataset']['brain_type']
-
+    model_save_folder = config['Dataset']['model_save_folder']
 
 
     channels = config['MLP_model']['channels']
@@ -57,7 +57,8 @@ def main():
     trainer = TrainManager(train_loader, train_loader, test_loader, test_loader, blip2_model, predictor, nc_class)
 
     print('start training')
-    trainer.train(epoch, 'left', lr)
+    subj_save = format(subj, '02')
+    trainer.train(epoch, 'left', lr, subj_save, model_save_folder)
 
 if __name__=='__main__':
     main()
