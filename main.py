@@ -58,7 +58,7 @@ def main():
 
     print('start training')
     subj_save = format(subj, '02')
-    trainer.train(epoch, 'left', lr, subj_save, model_save_folder)
+    trainer.train(epoch, brain_type, lr, subj_save, model_save_folder)
 
 if __name__=='__main__':
     main()
