@@ -1,0 +1,16 @@
+Dataset:
+  subj: 1
+  batch_size: 80
+  data_type: train
+  brain_type: left
+  data_dir: /export/c07/xzhan233/MRI
+  csv_file_path: /export/c07/xzhan233/MRI/Text_Data
+  model_save_folder: ./Model_Save
+  train_type: image
+  subject_submission_dir: ./algonauts_2023_challenge_submission/subj01
+
+MLP_model:
+  channels: 32
+  patch_size: 4
+  dim: 512
+  depth: 12
