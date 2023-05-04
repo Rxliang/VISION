@@ -1,7 +1,7 @@
 Dataset:
   subj: 1
   batch_size: 80
-  data_type: train
+  data_type: test
   brain_type: left
   data_dir: /export/c07/xzhan233/MRI
   csv_file_path: /export/c07/xzhan233/MRI/Text_Data
