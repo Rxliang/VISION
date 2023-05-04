@@ -2,6 +2,7 @@ import sys
 import os
 import torch
 import numpy as np
+from Model.mlp import MLP_model
 from Data.dataset import MRI_test_dataset
 from torch.utils.data import DataLoader
 
