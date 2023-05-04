@@ -90,19 +90,19 @@ def main():
 
     if train_type == 'image':
         if brain_type == 'left':
-            by = 'lh'
+            bt = 'lh'
         if brain_type == 'right':
-            by = 'rh'
+            bt = 'rh'
         total_predict_result = inference_MLP_image_model(test_loader, blip2_model, predictor)
-        np.save(os.path.join(subject_submission_dir, by + '_pred_test.npy',total_predict_result))
+        np.save(os.path.join(subject_submission_dir, bt + '_pred_test.npy',total_predict_result))
     
     if train_type == 'text':
         if brain_type == 'left':
-            by = 'lh'
+            bt = 'lh'
         if brain_type == 'right':
-            by = 'rh'
+            bt = 'rh'
         total_predict_result = inference_MLP_multimodal_model(test_loader, blip2_model, predictor)
-        np.save(os.path.join(subject_submission_dir, by + '_pred_test.npy',total_predict_result))
+        np.save(os.path.join(subject_submission_dir, bt + '_pred_test.npy',total_predict_result))
 
 if __name__=='__main__':
     main()
