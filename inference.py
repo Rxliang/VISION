@@ -103,3 +103,6 @@ def main():
             by = 'rh'
         total_predict_result = inference_MLP_multimodal_model(test_loader, blip2_model, predictor)
         np.save(os.path.join(subject_submission_dir, by + '_pred_test.npy',total_predict_result))
+
+if __name__=='__main__':
+    main()
