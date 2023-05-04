@@ -198,6 +198,8 @@ class TrainManager:
         optimizer = optim.Adam(predictor.parameters(), lr, weight_decay=5e-4,)
 
         if model_type == 'MLP' and train_type == 'text':
+            print('start multimodal image training')
+
             top3 = [(None,0)]*3
             top3_correlation_matrix = [(None,0)]*3
 
@@ -225,11 +227,13 @@ class TrainManager:
             top3 = [(None,0)]*3
             top3_correlation_matrix = [(None,0)]*3
 
+            print('start pure image training')
+
             for index in range(epoch):
                 loss = self.train_MLP_image_one_epoch(train_loader, multimodal_encoder, predictor, optimizer, criterion)
                 print('the total loss at epoch {} is {}'.format(index + 1, loss))
 
-                correlation = self.eval_MLP_model(test_loader, multimodal_encoder, predictor)
+                correlation = self.eval_MLP_image_model(test_loader, multimodal_encoder, predictor)
                 mean_correlation = self.metric_class.calculate_metric(correlation)
 
                 if mean_correlation > top3[0][1]:
