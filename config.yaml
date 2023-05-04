@@ -1,11 +1,12 @@
 Dataset:
   subj: 1
-  batch_size: 1300
+  batch_size: 80
   data_type: train
   brain_type: left
   data_dir: /export/c07/xzhan233/MRI
   csv_file_path: /export/c07/xzhan233/MRI/Text_Data
   model_save_folder: ./Model_Save
+  train_type: image
 
 MLP_model:
   channels: 32

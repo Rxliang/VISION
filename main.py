@@ -31,7 +31,7 @@ def main():
     csv_file_path = config['Dataset']['csv_file_path']
     brain_type = config['Dataset']['brain_type']
     model_save_folder = config['Dataset']['model_save_folder']
-
+    train_type = config['Dataset']['train_type']
 
     channels = config['MLP_model']['channels']
     patch_size = config['MLP_model']['patch_size']
@@ -58,7 +58,7 @@ def main():
 
     print('start training')
     subj_save = format(subj, '02')
-    trainer.train(epoch, brain_type, lr, subj_save, model_save_folder)
+    trainer.train(epoch, brain_type, lr, subj_save, model_save_folder, train_type)
 
 if __name__=='__main__':
     main()
