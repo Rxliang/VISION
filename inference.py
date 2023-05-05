@@ -70,7 +70,7 @@ def main():
     batch_size = config['Dataset']['batch_size']
     csv_file_path = config['Dataset']['csv_file_path']
     brain_type = config['Dataset']['brain_type']
-    model_save_folder = config['Dataset']['model_save_folder']
+    model_save_path = config['Dataset']['model_save_path']
     train_type = config['Dataset']['train_type']
     subject_submission_dir = config['Dataset']['subject_submission_dir']
     
@@ -88,7 +88,7 @@ def main():
 
     MLP_model_class = MLP_model(channels, patch_size, dim, depth, feature_size)
     predictor = MLP_model_class.init_MLP_Mixer()
-    predictor.load_state_dict(model_save_folder)
+    predictor.load_state_dict(model_save_path)
 
     if train_type == 'image':
         if brain_type == 'left':
