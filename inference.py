@@ -23,7 +23,7 @@ def inference_MLP_image_model(dataloader, encoder, predictor):
     total_predict_result = []
 
     with torch.no_grad():
-        for img, sen, mri in dataloader:
+        for img, sen in dataloader:
             sample = {"image": img, "text_input": list(sen)}
 
             encoder_output = encoder.extract_features(sample, 'image')
@@ -44,7 +44,7 @@ def inference_MLP_multimodal_model(dataloader, encoder, predictor):
     total_predict_result = []
 
     with torch.no_grad():
-        for img, sen, mri in dataloader:
+        for img, sen in dataloader:
             sample = {"image": img, "text_input": list(sen)}
 
             encoder_output = encoder.extract_features(sample)
@@ -89,7 +89,10 @@ def main():
 
     MLP_model_class = MLP_model(channels, patch_size, dim, depth, feature_size)
     predictor = MLP_model_class.init_MLP_Mixer()
-    predictor.load_state_dict(model_save_path)
+    predictor.load_state_dict(torch.load(model_save_path))
+
+    blip2_model.to(device)
+    predictor.to(device)
 
     if train_type == 'image':
         if brain_type == 'left':
@@ -97,7 +100,7 @@ def main():
         if brain_type == 'right':
             bt = 'rh'
         total_predict_result = inference_MLP_image_model(test_loader, blip2_model, predictor)
-        np.save(os.path.join(subject_submission_dir, bt + '_pred_test.npy',total_predict_result))
+        np.save(os.path.join(subject_submission_dir, bt + '_pred_test.npy'), total_predict_result.numpy())
     
     if train_type == 'text':
         if brain_type == 'left':
@@ -105,7 +108,7 @@ def main():
         if brain_type == 'right':
             bt = 'rh'
         total_predict_result = inference_MLP_multimodal_model(test_loader, blip2_model, predictor)
-        np.save(os.path.join(subject_submission_dir, bt + '_pred_test.npy',total_predict_result))
+        np.save(os.path.join(subject_submission_dir, bt + '_pred_test.npy'), total_predict_result.numpy())
 
 if __name__=='__main__':
     main()
