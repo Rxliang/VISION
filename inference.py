@@ -2,11 +2,13 @@ import sys
 import os
 import torch
 import numpy as np
+import argparse
 from Model.mlp import MLP_model
 from Data.dataset import MRI_test_dataset
+from lavis.models import load_model_and_preprocess
 from torch.utils.data import DataLoader
 
-
+device = 'cuda'
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Description of your model')
@@ -82,7 +84,7 @@ def main():
 
     test_dataset = MRI_test_dataset(subj, data_type, brain_type, vis_processors, txt_processors, data_dir, csv_file_path)
     test_loader = DataLoader(test_dataset,batch_size=batch_size, shuffle=False)
-    
+    feature_size = test_dataset.mri_dim
 
     MLP_model_class = MLP_model(channels, patch_size, dim, depth, feature_size)
     predictor = MLP_model_class.init_MLP_Mixer()

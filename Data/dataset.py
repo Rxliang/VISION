@@ -90,11 +90,15 @@ class MRI_test_dataset(Dataset):
 
         if data_type == 'test':
             self.img_dir = os.path.join(self.data_dir, 'test_split', 'test_images')
+            self.fmri_dir = os.path.join(self.data_dir, 'training_split', 'training_fmri')
             self.csv_file_path = os.path.join(csv_file_path,'subj' + self.subj, 'subj' +self.subj + '_test.csv')
         
         self.imgs_paths = sorted(list(Path(self.img_dir).iterdir()))
         self.image_list = self.read_image_list()
         self.text_dict = self.read_text_csv_file()
+
+        self.mri_array = self.read_fMRI_data()
+        self.mri_dim = self.mri_array.shape[-1]
 
     def read_image_list(self):
         img_list = os.listdir(self.img_dir)
@@ -118,7 +122,7 @@ class MRI_test_dataset(Dataset):
 
     def __len__(self):
         return len(self.image_list)
-
+    
     def __getitem__(self, idx):
 
         img_path = self.imgs_paths[idx]
