@@ -165,6 +165,9 @@ class noisy_celing_metric:
     def calculate_metric(self, mri_correlation):
         self.nc_array = self.load_nc_file()
 
+        self.nc_array[self.nc_array==0] = 1e-14
+        mri_correlation[mri_correlation<0] = 0
+
         mri_correlation = mri_correlation ** 2
         mri_correlation = mri_correlation.to('cpu')
 
@@ -172,5 +175,8 @@ class noisy_celing_metric:
         mask =  ~torch.isinf(cor_array)
         cor_array = cor_array[mask]
 
+        cor_array[cor_array > 1] = 1
+
         corr = torch.median(cor_array)
+
         return corr * 100
