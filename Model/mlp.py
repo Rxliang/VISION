@@ -18,22 +18,21 @@ class MLP_model:
 
     def init_MLP_Mixer(self):
 
-        # model = MLPMixer(
-        #     image_size = self.image_size,
-        #     channels = self.channels,
-        #     patch_size = self.patch_size,
-        #     dim = self.dim,
-        #     depth = self.depth,
-        #     num_classes = self.num_classes
-        # )
-        # return model
-        net = SirenNet(
-            dim_in = 24576,                        # input dimension, ex. 2d coor
-            dim_hidden = 2048,                  # hidden dimension
-            dim_out = 19004,                       # output dimension, ex. rgb value
-            num_layers = 2,                    # number of layers
-            final_activation = nn.Identity(),   # activation of final layer (nn.Identity() for direct output)
-            w0_initial = 30.                   # different signals may require different omega_0 in the first layer - this is a hyperparameter
-        ).to(device)
-
-        return net
+        model = MLPMixer(
+            image_size = self.image_size,
+            channels = self.channels,
+            patch_size = self.patch_size,
+            dim = self.dim,
+            depth = self.depth,
+            num_classes = self.num_classes
+        )
+        return model
+        # net = SirenNet(
+        #     dim_in = 24576,                        # input dimension, ex. 2d coor
+        #     dim_hidden = 2048,                  # hidden dimension
+        #     dim_out = 19004,                       # output dimension, ex. rgb value
+        #     num_layers = 2,                    # number of layers
+        #     final_activation = nn.Identity(),   # activation of final layer (nn.Identity() for direct output)
+        #     w0_initial = 30.                   # different signals may require different omega_0 in the first layer - this is a hyperparameter
+        # ).to(device)
+        # return net
