@@ -194,7 +194,8 @@ class TrainManager:
         multimodal_encoder.to(device)
         predictor.to(device)
 
-        criterion = torch.nn.MSELoss()
+        # criterion = torch.nn.MSELoss()
+        criterion = torch.nn.SmoothL1Loss(delta=1.0)
         optimizer = optim.Adam(predictor.parameters(), lr, weight_decay=5e-4,)
 
         if model_type == 'MLP' and train_type == 'text':
