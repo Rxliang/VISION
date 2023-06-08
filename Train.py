@@ -170,7 +170,7 @@ class TrainManager:
 
                 total_predict_result.append(predict_output)
                 total_mri_result.append(mri.to('cuda'))
-
+                
           
         mri_correlation = self.elementwise_corrcoef(torch.vstack(total_predict_result), torch.vstack(total_mri_result))
                 

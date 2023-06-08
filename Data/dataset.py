@@ -6,16 +6,48 @@ from torch import nn
 from PIL import Image
 from pathlib import Path
 from torch.utils.data import DataLoader, Dataset, random_split
+from torchvision import transforms
+from lavis.processors.randaugment import RandomAugment
+from torchvision.transforms.functional import InterpolationMode
 
 device = 'cuda'
-torch.manual_seed(3407)
+torch.manual_seed(5)
 
 class MRI_dataset(Dataset):
     def __init__(self, subj, data_type, brain_type, vis_transform, txt_transform, data_dir, csv_file_path):
         self.subj = format(subj, '02')
         self.data_dir = os.path.join(data_dir, 'subj'+self.subj)
         self.brain_type = brain_type
-        self.vis_transform = vis_transform
+        self.normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
+        self.vis_transform = transforms.Compose(
+            [
+                transforms.RandomResizedCrop(
+                    224,
+                    scale=(0.5, 1),
+                    interpolation=InterpolationMode.BICUBIC,
+                ),
+                transforms.RandomHorizontalFlip(),
+                RandomAugment(
+                    2,
+                    5,
+                    isPIL=True,
+                    augs=[
+                        "Identity",
+                        "AutoContrast",
+                        "Brightness",
+                        "Sharpness",
+                        "Equalize",
+                        "ShearX",
+                        "ShearY",
+                        "TranslateX",
+                        "TranslateY",
+                        "Rotate",
+                    ],
+                ),
+                transforms.ToTensor(),
+                self.normalize,
+            ]
+        )
         self.txt_transform = txt_transform
 
         if data_type == 'train':
@@ -60,11 +92,11 @@ class MRI_dataset(Dataset):
     def __getitem__(self, idx):
 
         img_path = self.imgs_paths[idx]
-        img_name = str(img_path).split("/")[-1].replace('.png', '')
+        img_name = str(img_path).split("\\")[-1].replace('.png', '')
 
         img = Image.open(img_path).convert('RGB')
 
-        img = self.vis_transform["eval"](img).to(device)
+        img = self.vis_transform(img).to(device)
 
         mri = self.mri_array[idx]
         
@@ -80,7 +112,36 @@ class MRI_test_dataset(Dataset):
         self.subj = format(subj, '02')
         self.data_dir = os.path.join(data_dir, 'subj'+self.subj)
         self.brain_type = brain_type
-        self.vis_transform = vis_transform
+        self.normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
+        self.vis_transform = transforms.Compose(
+            [
+                transforms.RandomResizedCrop(
+                    224,
+                    scale=(0.5, 1),
+                    interpolation=InterpolationMode.BICUBIC,
+                ),
+                transforms.RandomHorizontalFlip(),
+                RandomAugment(
+                    2,
+                    5,
+                    isPIL=True,
+                    augs=[
+                        "Identity",
+                        "AutoContrast",
+                        "Brightness",
+                        "Sharpness",
+                        "Equalize",
+                        "ShearX",
+                        "ShearY",
+                        "TranslateX",
+                        "TranslateY",
+                        "Rotate",
+                    ],
+                ),
+                transforms.ToTensor(),
+                self.normalize,
+            ]
+        )
         self.txt_transform = txt_transform
 
         if data_type == 'train':
@@ -130,7 +191,7 @@ class MRI_test_dataset(Dataset):
 
         img = Image.open(img_path).convert('RGB')
 
-        img = self.vis_transform["eval"](img).to(device)
+        img = self.vis_transform(img).to(device)
         
         caption = self.text_dict[img_name]
         sen = self.txt_transform["eval"](caption)
@@ -138,12 +199,12 @@ class MRI_test_dataset(Dataset):
         return img, sen
 
 def train_test_split(train_dataset, batch_size, shuffle=False):
-    train_size = int(0.8 * len(train_dataset))
-    eval_size = int(0.1 * len(train_dataset))
+    train_size = int(0.9 * len(train_dataset))
+    eval_size = int(0.08 * len(train_dataset))
     test_size = len(train_dataset) - train_size - eval_size
 
-    train_data, eval_data, test_data = random_split(train_dataset, [train_size, eval_size,test_size])
-    train_data = torch.utils.data.ConcatDataset([train_data, eval_data])
+    train_data, eval_data, test_data = random_split(train_dataset, [train_size,eval_size, test_size])
+    #train_data = torch.utils.data.ConcatDataset([train_data, eval_data])
 
     train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=shuffle)
     eval_loader = DataLoader(eval_data, batch_size=batch_size, shuffle=shuffle)
