@@ -9,7 +9,6 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
 from lavis.processors.randaugment import RandomAugment
 from torchvision.transforms.functional import InterpolationMode
-
 device = 'cuda'
 torch.manual_seed(5)
 

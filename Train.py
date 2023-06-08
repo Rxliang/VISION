@@ -3,6 +3,7 @@ import os
 import torch
 from torch import optim
 torch.manual_seed(3407)
+from Sophia import SophiaG 
 
 device = 'cuda'
 
@@ -101,7 +102,7 @@ class TrainManager:
 
                 encoder_output = encoder.extract_features(sample)
                 encoder_output = encoder_output.multimodal_embeds
-                encoder_output = encoder_output.view(-1, 32, 32, 24)
+                # encoder_output = encoder_output.view(-1, 32, 32, 24)
                 
                 predict_output = predictor(encoder_output)
 
@@ -124,7 +125,7 @@ class TrainManager:
 
                 encoder_output = encoder.extract_features(sample, 'image')
                 encoder_output = encoder_output.image_embeds
-                encoder_output = encoder_output.view(-1, 32, 32, 24)
+                # encoder_output = encoder_output.view(-1, 32, 32, 24)
                 
                 predict_output = predictor(encoder_output)
 
@@ -196,8 +197,8 @@ class TrainManager:
 
         # criterion = torch.nn.MSELoss()
         criterion = torch.nn.SmoothL1Loss(delta=1.0)
-        optimizer = optim.Adam(predictor.parameters(), lr, weight_decay=5e-4,)
-
+        # optimizer = optim.Adam(predictor.parameters(), lr, weight_decay=5e-4,)
+        optimizer = SophiaG(predictor.parameters(), lr, betas=(0.965, 0.99), rho = 0.01, weight_decay=1e-1)
         if model_type == 'MLP' and train_type == 'text':
             print('start multimodal image training')
 

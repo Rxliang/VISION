@@ -3,7 +3,7 @@ import torch.nn as nn
 from mlp_mixer_pytorch import MLPMixer
 torch.manual_seed(3407)
 from siren_pytorch import SirenNet
-
+from torchvision.ops import MLP
 
 device = 'cuda'
 
@@ -39,7 +39,24 @@ class Siren(nn.Module):
         x = self.net2(x)
 
         return x
+class MLP_basic(nn.Module):
+    def __init__(self, output_size, hidden_size1, hidden_size2, num_layers):
+        super(MLP_basic, self).__init__()
+        self.output_size = output_size
+        self.hidden_size = hidden_size1
+        self.inter_hidden = hidden_size2
+        self.num_layers = num_layers
+        
+        self.net1 = MLP(768,hidden_size1,[256, 128],hidden_size1)
+        self.net2 = MLP(197*hidden_size1,[12560],output_size)
+        
+    def forward(self, x):
+        x = self.net1(x)
+        x = x.view(-1, x.shape[1] * x.shape[2])
+        x = self.net2(x)
 
+        return x
+    
 class MLP_model:
     def __init__(self, channels, patch_size, dim, depth, num_classes):
         self.image_size = (32,24)
