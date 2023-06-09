@@ -40,15 +40,15 @@ class Siren(nn.Module):
 
         return x
 class MLP_basic(nn.Module):
-    def __init__(self, output_size, hidden_size1, hidden_size2, num_layers):
+    def __init__(self, output_size, hidden_size1):
         super(MLP_basic, self).__init__()
         self.output_size = output_size
         self.hidden_size = hidden_size1
-        self.inter_hidden = hidden_size2
-        self.num_layers = num_layers
+        # self.inter_hidden = hidden_size2
+        # self.num_layers = num_layers
         
-        self.net1 = MLP(768,hidden_size1,[256, 128],hidden_size1)
-        self.net2 = MLP(197*hidden_size1,[12560],output_size)
+        self.net1 = MLP(768,[512,256,128,hidden_size1])
+        self.net2 = MLP(197*hidden_size1,[output_size])
         
     def forward(self, x):
         x = self.net1(x)

@@ -3,7 +3,7 @@ import sys
 import yaml
 import torch
 import argparse
-from Model.mlp import MLP_model,Siren
+from Model.mlp import MLP_model,Siren,MLP_basic
 from Train import TrainManager
 from lavis.models import load_model_and_preprocess
 from Data.dataset import MRI_dataset, train_test_split, noisy_celing_metric
@@ -48,8 +48,8 @@ def main():
     train_dataset = MRI_dataset(subj, data_type, brain_type, vis_processors, txt_processors, data_dir, csv_file_path)
     feature_size = train_dataset.mri_dim
     train_loader, eval_loader, test_loader = train_test_split(train_dataset, batch_size)
-    
-    predictor = Siren(feature_size,100,1024,3,30)
+    predictor = MLP_basic(feature_size,160)
+    # predictor = Siren(feature_size,100,1024,3,30)
     # MLP_model_class = MLP_model(channels, patch_size, dim, depth, feature_size)
     # predictor = MLP_model_class.init_Siren()
 
