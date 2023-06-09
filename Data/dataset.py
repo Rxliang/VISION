@@ -18,35 +18,36 @@ class MRI_dataset(Dataset):
         self.data_dir = os.path.join(data_dir, 'subj'+self.subj)
         self.brain_type = brain_type
         self.normalize = transforms.Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
-        self.vis_transform = transforms.Compose(
-            [
-                transforms.RandomResizedCrop(
-                    224,
-                    scale=(0.5, 1),
-                    interpolation=InterpolationMode.BICUBIC,
-                ),
-                transforms.RandomHorizontalFlip(),
-                RandomAugment(
-                    2,
-                    5,
-                    isPIL=True,
-                    augs=[
-                        "Identity",
-                        "AutoContrast",
-                        "Brightness",
-                        "Sharpness",
-                        "Equalize",
-                        "ShearX",
-                        "ShearY",
-                        "TranslateX",
-                        "TranslateY",
-                        "Rotate",
-                    ],
-                ),
-                transforms.ToTensor(),
-                self.normalize,
-            ]
-        )
+        self.vis_transform = vis_transform
+        # transforms.Compose(
+        #     [
+        #         transforms.RandomResizedCrop(
+        #             224,
+        #             scale=(0.5, 1),
+        #             interpolation=InterpolationMode.BICUBIC,
+        #         ),
+        #         transforms.RandomHorizontalFlip(),
+        #         RandomAugment(
+        #             2,
+        #             5,
+        #             isPIL=True,
+        #             augs=[
+        #                 "Identity",
+        #                 "AutoContrast",
+        #                 "Brightness",
+        #                 "Sharpness",
+        #                 "Equalize",
+        #                 "ShearX",
+        #                 "ShearY",
+        #                 "TranslateX",
+        #                 "TranslateY",
+        #                 "Rotate",
+        #             ],
+        #         ),
+        #         transforms.ToTensor(),
+        #         self.normalize,
+        #     ]
+        # )
         self.txt_transform = txt_transform
 
         if data_type == 'train':
@@ -91,11 +92,11 @@ class MRI_dataset(Dataset):
     def __getitem__(self, idx):
 
         img_path = self.imgs_paths[idx]
-        img_name = str(img_path).split("\\")[-1].replace('.png', '')
+        img_name = str(img_path).split("/")[-1].replace('.png', '')
 
         img = Image.open(img_path).convert('RGB')
 
-        img = self.vis_transform(img).to(device)
+        img = self.vis_transform["eval"](img).to(device)
 
         mri = self.mri_array[idx]
         
